@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage
+package-lock.json
+playwright-report
+test-results
+
+# Generado por MSW (npx msw init public)
+public/mockServiceWorker.js
