@@ -1,13 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Acceso from "./pages/Acceso";
 import Dashboard from "./pages/Dashboard";
 import NoEncontrado from "./pages/NoEncontrado";
 
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Provisoria hasta PU-06, que la reemplaza por la página de acceso. */}
-      <Route path="/acceso" element={<p>Acceso: llega en PU-06</p>} />
+      <Route path="/acceso" element={<Acceso />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="*" element={<NoEncontrado />} />
