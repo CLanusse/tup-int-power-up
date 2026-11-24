@@ -1,8 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard } from "lucide-react";
+import { Dumbbell, LayoutDashboard } from "lucide-react";
 import "./Sidebar.css";
 
-const LINKS = [{ to: "/", label: "Dashboard", icon: LayoutDashboard, end: true }];
+const LINKS = [
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/ejercicios", label: "Ejercicios", icon: Dumbbell },
+];
 
 function Sidebar() {
   return (
