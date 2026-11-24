@@ -4,6 +4,7 @@ import Acceso from "./pages/Acceso";
 import Dashboard from "./pages/Dashboard";
 import Ejercicios from "./pages/Ejercicios";
 import NoEncontrado from "./pages/NoEncontrado";
+import Rutinas from "./pages/Rutinas";
 
 export function AppRoutes() {
   return (
@@ -12,6 +13,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/ejercicios" element={<Ejercicios />} />
+        <Route path="/rutinas" element={<Rutinas />} />
         <Route path="*" element={<NoEncontrado />} />
       </Route>
     </Routes>
