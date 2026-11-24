@@ -17,6 +17,6 @@ Construir el frontend completo de PowerUp (React + Vite) funcionando sin backend
 ## Enlaces
 
 - Tablero Kanban (Trello): https://trello.com/b/E1dQvGQA/powerup
-- Prototipo desplegado (Vercel): _se completa después del despliegue_
+- Prototipo desplegado (Vercel): https://tup-int-power-up.vercel.app
 
 > El README completo llega en la tarjeta PU-23.
