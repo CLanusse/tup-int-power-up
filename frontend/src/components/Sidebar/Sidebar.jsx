@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Dumbbell, LayoutDashboard, Library } from "lucide-react";
+import { CalendarRange, Dumbbell, LayoutDashboard, Library } from "lucide-react";
 import "./Sidebar.css";
 
 const LINKS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/ejercicios", label: "Ejercicios", icon: Dumbbell },
   { to: "/rutinas", label: "Rutinas", icon: Library },
+  { to: "/planes", label: "Planes", icon: CalendarRange },
 ];
 
 function Sidebar() {
