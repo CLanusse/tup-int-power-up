@@ -118,6 +118,58 @@ export const authHandlers = [
       { auth: false },
     ),
   ),
+
+  http.get(
+    "*/api/auth/perfil",
+    route(({ user }) => json({ user: serializeUser(getUserOrFail(user.id)) })),
+  ),
+
+  http.put(
+    "*/api/auth/perfil",
+    route(({ user, body }) => {
+      const v = createValidator();
+      checkNombre(v, body, { required: false });
+      checkEmail(v, body, { required: false });
+      v.done();
+
+      const account = getUserOrFail(user.id);
+      const email = body.email !== undefined ? normalizeEmail(body.email) : undefined;
+      if (email !== undefined && email !== account.email) ensureEmailAvailable(email, account.id);
+
+      update(account, { nombre: body.nombre?.trim(), email });
+
+      // El token se renueva porque incluye el email.
+      return json({
+        message: "Perfil actualizado exitosamente",
+        user: serializeUser(account),
+        token: generarToken(account),
+      });
+    }),
+  ),
+
+  http.put(
+    "*/api/auth/password",
+    route(({ user, body }) => {
+      const v = createValidator();
+      if (
+        v.check(isText(body.passwordActual), "passwordActual", "La password actual debe ser texto")
+      ) {
+        v.check(body.passwordActual !== "", "passwordActual", "La password actual es obligatoria");
+      }
+      checkNewPassword(v, body, "passwordNueva");
+      v.done();
+
+      const account = getUserOrFail(user.id);
+      // 400 (y no 401) para no cerrar la sesión del cliente.
+      if (account.password !== body.passwordActual) fail(400, "La password actual es incorrecta");
+      if (body.passwordActual === body.passwordNueva) {
+        fail(400, "La nueva password debe ser distinta de la actual");
+      }
+
+      update(account, { password: body.passwordNueva });
+      return json({ message: "Password actualizada exitosamente" });
+    }),
+  ),
 ];
 
 const ROLES = ["usuario", "admin"];
