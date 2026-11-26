@@ -13,7 +13,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/acceso" element={<Acceso />} />
       <Route element={<ProtectedRoute />}>
-      <Route path="/cuenta" element={<Cuenta />} />
+        <Route path="/cuenta" element={<Cuenta />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/ejercicios" element={<Ejercicios />} />
         <Route path="/rutinas" element={<Rutinas />} />
