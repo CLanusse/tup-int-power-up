@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Acceso from "./pages/Acceso";
 import Actividad from "./pages/Actividad";
 import Dashboard from "./pages/Dashboard";
+import DetalleEntrenamiento from "./pages/DetalleEntrenamiento";
 import Ejercicios from "./pages/Ejercicios";
 import Historial from "./pages/Historial";
 import NoEncontrado from "./pages/NoEncontrado";
@@ -17,6 +18,7 @@ export function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/actividad" element={<Actividad />} />
         <Route path="/actividad/historial" element={<Historial />} />
+        <Route path="/actividad/:id" element={<DetalleEntrenamiento />} />
         <Route path="/ejercicios" element={<Ejercicios />} />
         <Route path="/rutinas" element={<Rutinas />} />
         <Route path="/planes" element={<Planes />} />
