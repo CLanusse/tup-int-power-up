@@ -16,9 +16,11 @@
     "coverage": "node scripts/vitest.mjs run --coverage"
   },
   "dependencies": {
+    "chart.js": "^4.6.2",
     "lucide-react": "^1.77.0",
     "msw": "^2.15.0",
     "react": "^19.3.1",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.6"
   },

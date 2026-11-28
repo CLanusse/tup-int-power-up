@@ -1,4 +1,7 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import LoadingState from "./components/Feedback/LoadingState";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Acceso from "./pages/Acceso";
 import Cuenta from "./pages/Cuenta";
@@ -10,6 +13,9 @@ import Historial from "./pages/Historial";
 import NoEncontrado from "./pages/NoEncontrado";
 import Planes from "./pages/Planes";
 import Rutinas from "./pages/Rutinas";
+
+// Progreso incluye Chart.js: se carga solo cuando se visita.
+const Progreso = lazy(() => import("./pages/Progreso"));
 
 export function AppRoutes() {
   return (
@@ -24,6 +30,14 @@ export function AppRoutes() {
         <Route path="/ejercicios" element={<Ejercicios />} />
         <Route path="/rutinas" element={<Rutinas />} />
         <Route path="/planes" element={<Planes />} />
+        <Route
+          path="/progreso"
+          element={
+            <Suspense fallback={<LoadingState message="Cargando métricas..." />}>
+              <Progreso />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<NoEncontrado />} />
       </Route>
     </Routes>
