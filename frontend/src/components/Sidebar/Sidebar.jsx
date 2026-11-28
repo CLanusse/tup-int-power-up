@@ -1,5 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Activity, CalendarRange, Dumbbell, LayoutDashboard, Library, UserRound } from "lucide-react";
+import {
+  Activity,
+  CalendarRange,
+  Dumbbell,
+  LayoutDashboard,
+  Library,
+  UserRound,
+} from "lucide-react";
 import "./Sidebar.css";
 
 const LINKS = [
