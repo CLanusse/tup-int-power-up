@@ -7,7 +7,8 @@
  *
  * Las fechas de la cuenta demo se calculan a partir de la semana actual: la
  * semana en curso es la cuarta del plan y solo se cargan las sesiones cuya
- * fecha ya pasó, así la demo siempre muestra un plan en curso.
+ * fecha ya pasó, salvo la última del plan. Así la demo siempre muestra un plan
+ * en curso con una próxima sesión para registrar, cualquier día de la semana.
  */
 
 export const DEMO_ACCOUNT = { email: "demo@powerup.com", password: "Demo1234!" };
@@ -397,9 +398,16 @@ export function crearDatosIniciales(now = new Date()) {
     }
   }
 
+  // La última sesión del plan nunca se carga como hecha: de viernes a domingo ya pasó su
+  // fecha, y sin esta excepción el plan quedaría al 100% y sin próxima sesión.
+  const esUltimaSesion = (entrenamiento) =>
+    entrenamiento.semana === PLAN.semanas.length && entrenamiento.orden === PLAN.sesiones.length;
   const entrenamientos = [0, 1, 2, 3]
     .flatMap((indice) => entrenamientosDeLaSemana(now, indice))
-    .filter((entrenamiento) => entrenamiento.timestamp.getTime() <= now.getTime());
+    .filter(
+      (entrenamiento) =>
+        entrenamiento.timestamp.getTime() <= now.getTime() && !esUltimaSesion(entrenamiento),
+    );
 
   for (const entrenamiento of entrenamientos) {
     const sesion = sesionPorSemanaYOrden.get(`${entrenamiento.semana}-${entrenamiento.orden}`);
