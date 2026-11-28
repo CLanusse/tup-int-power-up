@@ -13,7 +13,9 @@
     "format:check": "prettier --check .",
     "test": "node scripts/vitest.mjs run",
     "test:watch": "node scripts/vitest.mjs",
-    "coverage": "node scripts/vitest.mjs run --coverage"
+    "coverage": "node scripts/vitest.mjs run --coverage",
+    "test:e2e": "playwright test",
+    "report:e2e": "playwright show-report"
   },
   "dependencies": {
     "chart.js": "^4.6.2",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.13",
