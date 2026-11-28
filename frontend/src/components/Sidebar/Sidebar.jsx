@@ -3,6 +3,7 @@ import {
   Activity,
   CalendarRange,
   Dumbbell,
+  History,
   LayoutDashboard,
   Library,
   UserRound,
@@ -12,6 +13,7 @@ import "./Sidebar.css";
 const LINKS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/actividad", label: "Registrar", icon: Activity, end: true },
+  { to: "/actividad/historial", label: "Historial", icon: History },
   { to: "/ejercicios", label: "Ejercicios", icon: Dumbbell },
   { to: "/rutinas", label: "Rutinas", icon: Library },
   { to: "/planes", label: "Planes", icon: CalendarRange },
