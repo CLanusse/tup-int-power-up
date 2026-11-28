@@ -1,5 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { Activity, CalendarRange, Dumbbell, History, LayoutDashboard, Library } from "lucide-react";
+import {
+  Activity,
+  CalendarRange,
+  Dumbbell,
+  History,
+  LayoutDashboard,
+  Library,
+  UserRound,
+} from "lucide-react";
 import "./Sidebar.css";
 
 const LINKS = [
@@ -9,6 +17,7 @@ const LINKS = [
   { to: "/ejercicios", label: "Ejercicios", icon: Dumbbell },
   { to: "/rutinas", label: "Rutinas", icon: Library },
   { to: "/planes", label: "Planes", icon: CalendarRange },
+  { to: "/cuenta", label: "Mi cuenta", icon: UserRound },
 ];
 
 function Sidebar() {

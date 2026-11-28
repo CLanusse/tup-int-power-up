@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Acceso from "./pages/Acceso";
+import Cuenta from "./pages/Cuenta";
 import Actividad from "./pages/Actividad";
 import Dashboard from "./pages/Dashboard";
 import DetalleEntrenamiento from "./pages/DetalleEntrenamiento";
@@ -15,6 +16,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/acceso" element={<Acceso />} />
       <Route element={<ProtectedRoute />}>
+        <Route path="/cuenta" element={<Cuenta />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/actividad" element={<Actividad />} />
         <Route path="/actividad/historial" element={<Historial />} />
