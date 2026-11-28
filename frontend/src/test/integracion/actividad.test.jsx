@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
-import { crearEntrenamiento } from "../handlers";
+import { describe, expect, it, vi } from "vitest";
+import { crearEntrenamiento, pagina } from "../handlers";
 import { capturarBody, renderizarApp } from "../renderizarApp";
 import { server } from "../server";
 
@@ -123,5 +123,117 @@ describe("registrar entrenamiento", () => {
     expect(enlace).toHaveAttribute("href", "/actividad/300");
     expect(screen.getByText("1.505 kg")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Ver historial completo/ })).toBeInTheDocument();
+  });
+});
+
+describe("historial", () => {
+  it("pagina los resultados", async () => {
+    const pedidos = [];
+    server.use(
+      http.get("*/api/workouts", ({ request }) => {
+        const params = new URL(request.url).searchParams;
+        pedidos.push(Object.fromEntries(params));
+        const page = Number(params.get("page"));
+        return HttpResponse.json({
+          workouts: [crearEntrenamiento({ id: page, nombre: `Sesión de la página ${page}` })],
+          pagination: { page, limit: 10, total: 25, totalPages: 3 },
+        });
+      }),
+    );
+    const { user } = renderizarApp("/actividad/historial");
+
+    expect(await screen.findByText("Sesión de la página 1")).toBeInTheDocument();
+    expect(screen.getByText("Página 1 de 3 · 25 registros")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+
+    expect(await screen.findByText("Sesión de la página 2")).toBeInTheDocument();
+    expect(pedidos.at(-1)).toMatchObject({ page: "2", limit: "10" });
+  });
+
+  it("filtra por fechas y vuelve a la primera página", async () => {
+    const pedidos = [];
+    server.use(
+      http.get("*/api/workouts", ({ request }) => {
+        pedidos.push(Object.fromEntries(new URL(request.url).searchParams));
+        return HttpResponse.json(pagina([]));
+      }),
+    );
+    const { user } = renderizarApp("/actividad/historial");
+
+    await screen.findByText("Todas las sesiones");
+    await user.type(screen.getByLabelText(/Desde/), "2026-11-01");
+
+    expect(await screen.findByText("Resultados del período")).toBeInTheDocument();
+    expect(pedidos.at(-1)).toMatchObject({ page: "1" });
+    expect(new Date(pedidos.at(-1).from)).toEqual(new Date(2026, 10, 1));
+    expect(screen.getByText("Todavía no hay actividad registrada")).toBeInTheDocument();
+  });
+});
+
+describe("detalle de entrenamiento", () => {
+  it("muestra el resumen y las series agrupadas por ejercicio", async () => {
+    renderizarApp("/actividad/300");
+
+    expect(await screen.findByRole("heading", { name: "Piernas del lunes" })).toBeInTheDocument();
+    expect(screen.getByText("Basado en la rutina")).toBeInTheDocument();
+    const resumen = screen.getByRole("region", { name: "Resumen del entrenamiento" });
+    expect(within(resumen).getByText("1.505 kg")).toBeInTheDocument();
+    expect(within(resumen).getByText("8.5")).toBeInTheDocument();
+
+    const sentadilla = screen.getByRole("region", { name: "Sentadilla" });
+    expect(within(sentadilla).getAllByRole("row")).toHaveLength(3);
+  });
+
+  it("edita el entrenamiento y guarda las series", async () => {
+    const body = capturarBody();
+    server.use(
+      http.put("*/api/workouts/:id", async ({ request }) => {
+        await body.guardar(request);
+        return HttpResponse.json({ workout: crearEntrenamiento({ nombre: "Piernas corregido" }) });
+      }),
+    );
+    const { user } = renderizarApp("/actividad/300");
+
+    await user.click(await screen.findByRole("button", { name: /Editar/ }));
+    const form = formulario();
+    // En edición no se puede cambiar la sesión o rutina de origen.
+    expect(within(form).queryByLabelText(/^Sesión del plan/)).not.toBeInTheDocument();
+    await user.clear(within(form).getByLabelText("Peso 2"));
+    await user.type(within(form).getByLabelText("Peso 2"), "107.5");
+    await user.click(within(form).getByRole("button", { name: "Quitar fila 3" }));
+    await user.click(within(form).getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Cambios guardados.")).toBeInTheDocument();
+    expect(body.ultima.series).toEqual([
+      { exerciseId: 11, repeticiones: 5, peso: 100, rir: 2, rpe: 8 },
+      { exerciseId: 11, repeticiones: 5, peso: 107.5, rir: 1, rpe: 9 },
+    ]);
+  });
+
+  it("elimina y vuelve al historial", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    server.use(http.delete("*/api/workouts/:id", () => new HttpResponse(null, { status: 204 })));
+    const { user } = renderizarApp("/actividad/300");
+
+    await user.click(await screen.findByRole("button", { name: "Eliminar entrenamiento" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Historial de entrenamientos" }),
+    ).toBeInTheDocument();
+  });
+
+  it("informa si el entrenamiento no existe", async () => {
+    server.use(
+      http.get("*/api/workouts/:id", () =>
+        HttpResponse.json({ error: "Entrenamiento no encontrado" }, { status: 404 }),
+      ),
+    );
+    renderizarApp("/actividad/999");
+
+    expect(
+      await screen.findByRole("heading", { name: "Entrenamiento no encontrado" }),
+    ).toBeInTheDocument();
   });
 });
