@@ -5,6 +5,44 @@ import { programa } from "../handlers";
 import { capturarBody, renderizarApp } from "../renderizarApp";
 import { server } from "../server";
 
+describe("dashboard", () => {
+  it("muestra las métricas de la semana y el plan en curso con su próxima sesión", async () => {
+    const pedidos = [];
+    server.use(
+      http.get("*/api/metrics/activity-heatmap", ({ request }) => {
+        pedidos.push(new URL(request.url).searchParams.get("tz"));
+        return HttpResponse.json({ activity: [] });
+      }),
+    );
+    renderizarApp("/");
+
+    expect(await screen.findByText("10.167,5 kg")).toBeInTheDocument();
+    expect(screen.getByText("284")).toBeInTheDocument();
+
+    const plan = await screen.findByRole("region", { name: "Plan en curso" });
+    expect(within(plan).getByText("50%")).toBeInTheDocument();
+    expect(within(plan).getByText("Semana 1 · Día 2")).toBeInTheDocument();
+    expect(within(plan).getByRole("link", { name: /Registrar/ })).toHaveAttribute(
+      "href",
+      "/actividad?sesion=51",
+    );
+    expect(within(plan).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
+
+    // La actividad diaria se pide con la zona horaria del navegador.
+    expect(pedidos[0]).toBeTruthy();
+  });
+
+  it("sin planes invita a crear uno", async () => {
+    server.use(
+      http.get("*/api/metrics/program-adherence", () => HttpResponse.json({ programs: [] })),
+    );
+    renderizarApp("/");
+
+    expect(await screen.findByRole("heading", { name: "Sin plan activo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Ir a planes/ })).toHaveAttribute("href", "/planes");
+  });
+});
+
 describe("planes", () => {
   it("muestra el cumplimiento por semana y el estado de cada sesión", async () => {
     renderizarApp("/planes");
