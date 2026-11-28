@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import {
   Activity,
   CalendarRange,
+  ChartNoAxesColumnIncreasing,
   Dumbbell,
   History,
   LayoutDashboard,
@@ -17,6 +18,7 @@ const LINKS = [
   { to: "/ejercicios", label: "Ejercicios", icon: Dumbbell },
   { to: "/rutinas", label: "Rutinas", icon: Library },
   { to: "/planes", label: "Planes", icon: CalendarRange },
+  { to: "/progreso", label: "Mi progreso", icon: ChartNoAxesColumnIncreasing },
   { to: "/cuenta", label: "Mi cuenta", icon: UserRound },
 ];
 
